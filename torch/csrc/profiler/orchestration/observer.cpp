@@ -159,12 +159,7 @@ std::shared_ptr<ProfilerStateBase> popTLS() {
 /*static*/ std::shared_ptr<ProfilerStateBase> ProfilerStateBase::pop(
     bool global) {
   auto out = global ? GlobalManager::pop() : popTLS();
-  // State is routed to the GlobalManager whenever it uses global callbacks
-  // (KINETO_ONDEMAND, or KINETO with profile_all_threads), which is exactly
-  // pushGlobalCallbacks() -- see push() and get(). Asserting on global() here
-  // would spuriously fire for the profile_all_threads case.
-  TORCH_INTERNAL_ASSERT_DEBUG_ONLY(
-      !out || out->config().pushGlobalCallbacks() == global);
+  TORCH_INTERNAL_ASSERT_DEBUG_ONLY(!out || out->config().global() == global);
   return out;
 }
 
